@@ -61,42 +61,6 @@ function renderPlanner() {
     }
 }
 
-// function handleSaveClick() {
-//     var hour = $(this).parent().attr('id').split('-')[1];
-//     var plan = $(this).parent().children().eq(1).val().trim();
-//     var changePlan = false;
-//     if (plan != '') {  
-//         var savedPlans = JSON.parse(localStorage.getItem("plans"));
-//         if (savedPlans === null) {
-//             var newPlans = [{hour, plan}];
-//             localStorage.setItem("plans", JSON.stringify(newPlans));
-//         }
-//         else {
-//             savedPlans.forEach(x => {
-//                 if (x.hour === hour) {
-//                     x.plan = plan;
-//                     return;
-//                 }
-//             })
-//             localStorage.setItem("plans", JSON.stringify(savedPlans));
-//             if (!changePlan) {
-//                 var newPlans = savedPlans.concat([{hour, plan}])
-//                 localStorage.setItem("plans", JSON.stringify(newPlans));
-//             }
-//         }
-//         renderNotification("update", hour);  
-//     } else {
-//         if (savedPlans!= null ) {
-//             savedPlans.forEach(x => {
-//                 if (x.hour === hour) {
-//                     x.plan = plan;
-//                     return;
-//                 }
-//             })
-//         }
-//     }
-// }
-
 function handleSaveClick() {
     var hour = $(this).parent().attr('id').split('-')[1];
     var plan = $(this).parent().children().eq(1).val().trim();
