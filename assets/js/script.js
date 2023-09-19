@@ -118,7 +118,7 @@ function renderSavedPlans() {
 }
 
 function renderNotification(str, hour) {
-    var alert = $("<div class='alert alert-dismissible fade show' role='alert'>");
+    var alert = $("<div class='alert fade show' role='alert'>");
     if (str === 'update') {
         var alertMsg = $("<strong>Appointment on " + hour +":00" + " has been saved!</strong>");
         alert.addClass('alert-success');
@@ -132,7 +132,7 @@ function renderNotification(str, hour) {
     }
     alert.append(alertMsg);
     alertDiv.append(alert);
-    var closeButt = $("<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'>")
-    closeButt.append("<span aria-hidden='true'>&times;</span>")
-    alert.append(closeButt);
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 1500)
 }
