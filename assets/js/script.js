@@ -61,47 +61,87 @@ function renderPlanner() {
     }
 }
 
+// function handleSaveClick() {
+//     var hour = $(this).parent().attr('id').split('-')[1];
+//     var plan = $(this).parent().children().eq(1).val().trim();
+//     var changePlan = false;
+//     if (plan != '') {  
+//         var savedPlans = JSON.parse(localStorage.getItem("plans"));
+//         if (savedPlans === null) {
+//             var newPlans = [{hour, plan}];
+//             localStorage.setItem("plans", JSON.stringify(newPlans));
+//         }
+//         else {
+//             savedPlans.forEach(x => {
+//                 if (x.hour === hour) {
+//                     x.plan = plan;
+//                     return;
+//                 }
+//             })
+//             localStorage.setItem("plans", JSON.stringify(savedPlans));
+//             if (!changePlan) {
+//                 var newPlans = savedPlans.concat([{hour, plan}])
+//                 localStorage.setItem("plans", JSON.stringify(newPlans));
+//             }
+//         }
+//         renderNotification("update", hour);  
+//     } else {
+//         if (savedPlans!= null ) {
+//             savedPlans.forEach(x => {
+//                 if (x.hour === hour) {
+//                     x.plan = plan;
+//                     return;
+//                 }
+//             })
+//         }
+//     }
+// }
+
 function handleSaveClick() {
     var hour = $(this).parent().attr('id').split('-')[1];
     var plan = $(this).parent().children().eq(1).val().trim();
-    if (plan != '') {
-        var alert = $("<div class='alert alert-success alert-dismissible fade show' role='alert'>");
-        var alertMsg = $("<strong>Appointment on " + hour +":00" + " has been saved!</strong>");
-        alert.append(alertMsg);
-        alertDiv.append(alert);
-        var closeButt = $("<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'>")
-        closeButt.append("<span aria-hidden='true'>&times;</span>")
-        alert.append(closeButt);   
+    var changePlan = false; 
         var savedPlans = JSON.parse(localStorage.getItem("plans"));
-        if (savedPlans === null) {
-            var newPlans = [{hour, plan}];
-            localStorage.setItem("plans", JSON.stringify(newPlans));
+        if (!savedPlans) {
+            if (plan != "") {
+                var newPlans = [{hour, plan}];
+                localStorage.setItem("plans", JSON.stringify(newPlans));
+                renderNotification("update", hour);
+            }
+            else {
+                renderNotification();
+            }
         }
         else {
-            var changePlan = false;
             savedPlans.forEach(x => {
                 if (x.hour === hour) {
                     x.plan = plan;
                     changePlan = true;
                     return;
                 }
-            })
-            localStorage.setItem("plans", JSON.stringify(savedPlans));
+            });
             if (!changePlan) {
-                var newPlans = savedPlans.concat([{hour, plan}])
-                localStorage.setItem("plans", JSON.stringify(newPlans));
+                if (plan != "") {
+                    var newPlans = savedPlans.concat([{hour, plan}])
+                    localStorage.setItem("plans", JSON.stringify(newPlans));
+                    renderNotification("update", hour);
+                }
+                else {
+                    renderNotification();
+                }
+            } else {
+                if (plan != "") {
+                    localStorage.setItem("plans", JSON.stringify(savedPlans));
+                    renderNotification("update", hour);
+                }
+                else {
+                    var newPlans = savedPlans.filter(item => item.plan != "");
+                    localStorage.setItem("plans", JSON.stringify(newPlans));
+                    renderNotification("delete", hour);
+                }
             }
         }  
-    } else {
-        var alert = $("<div class='alert alert-danger alert-dismissible fade show' role='alert'>");
-        var alertMsg = $("<strong>Input must not be empty!</strong>");
-        alert.append(alertMsg);
-        alertDiv.append(alert);
-        var closeButt = $("<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'>")
-        closeButt.append("<span aria-hidden='true'>&times;</span>")
-        alert.append(closeButt);  
-    }
-}
+} 
 
 function renderSavedPlans() {
     var savedPlans = JSON.parse(localStorage.getItem("plans"));
@@ -111,4 +151,24 @@ function renderSavedPlans() {
             hourRow.children().eq(1).text(item.plan);
         })
     }
+}
+
+function renderNotification(str, hour) {
+    var alert = $("<div class='alert alert-dismissible fade show' role='alert'>");
+    if (str === 'update') {
+        var alertMsg = $("<strong>Appointment on " + hour +":00" + " has been saved!</strong>");
+        alert.addClass('alert-success');
+    } else if (str === 'delete') {
+        var alertMsg = $("<strong>Appointment on " + hour +":00" + " has been delete!</strong>");
+        alert.addClass('alert-warning');
+    }
+    else {
+        var alertMsg = $("<strong>Plan cannot be empty!</strong>");
+        alert.addClass('alert-danger');
+    }
+    alert.append(alertMsg);
+    alertDiv.append(alert);
+    var closeButt = $("<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'>")
+    closeButt.append("<span aria-hidden='true'>&times;</span>")
+    alert.append(closeButt);
 }
