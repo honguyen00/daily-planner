@@ -4,38 +4,26 @@ var today = dayjs();
 var mainCon = $('#main');
 var alertDiv = $('.alert-stack')
 
-
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
 $(function () {
-    // TODO: Add a listener for click events on the save button. This code should
-    // use the id in the containing time-block as a key to save the user input in
-    // local storage. HINT: What does `this` reference in the click listener
-    // function? How can DOM traversal be used to get the "hour-x" id of the
-    // time-block containing the button that was clicked? How might the id be
-    // useful when saving the description in local storage?
+
     mainCon.on('click', '.saveBtn', handleSaveClick);
-    // TODO: Add code to apply the past, present, or future class to each time
-    // block by comparing the id to the current hour. HINTS: How can the id
-    // attribute of each time-block be used to conditionally add or remove the
-    // past, present, and future classes? How can Day.js be used to get the
-    // current hour in 24-hour time?
+    
     renderPlanner()
-    // TODO: Add code to get any user input that was saved in localStorage and set
-    // the values of the corresponding textarea elements. HINT: How can the id
-    // attribute of each time-block be used to do this?
+    
     renderSavedPlans()
-    // TODO: Add code to display the current date in the header of the page.
+    
     renderToday();
 });
 
-
+//Display the current date in the header of the page.
 function renderToday() {
+    // in this format: Thursday, September 21th
     $('#currentDay').text(today.format('dddd, MMMM D') + 'th');
 }
 
+//Displaying the row of the planner with corresponding colors
 function renderPlanner() {
+    //loop through each hour and add classes correspondingly
     for (var i=startHour; i<=finishHour;i++) {
         var rowDiv = $("<div class='row time-block'>")
         rowDiv.attr('id', 'hour-' + i);
@@ -61,11 +49,16 @@ function renderPlanner() {
     }
 }
 
+//Handle save button clicked
 function handleSaveClick() {
+    // get users' input values
     var hour = $(this).parent().attr('id').split('-')[1];
     var plan = $(this).parent().children().eq(1).val().trim();
+    // boolean value for changing the plan
     var changePlan = false; 
+        //get saved plan from local storage 
         var savedPlans = JSON.parse(localStorage.getItem("plans"));
+        // no saved plans, create a new plan array
         if (!savedPlans) {
             if (plan != "") {
                 var newPlans = [{hour, plan}];
@@ -76,6 +69,7 @@ function handleSaveClick() {
                 renderNotification();
             }
         }
+        // there is saved plans, loop through each plan to decide whether users want to change plan or add a new plan
         else {
             savedPlans.forEach(x => {
                 if (x.hour === hour) {
@@ -84,6 +78,7 @@ function handleSaveClick() {
                     return;
                 }
             });
+            // add a new plan to existing plan array
             if (!changePlan) {
                 if (plan != "") {
                     var newPlans = savedPlans.concat([{hour, plan}])
@@ -93,7 +88,9 @@ function handleSaveClick() {
                 else {
                     renderNotification();
                 }
-            } else {
+            } 
+            // update plan from existing plan array 
+            else {
                 if (plan != "") {
                     localStorage.setItem("plans", JSON.stringify(savedPlans));
                     renderNotification("update", hour);
@@ -107,6 +104,7 @@ function handleSaveClick() {
         }  
 } 
 
+//Displaying any plans that have been saved to the planner
 function renderSavedPlans() {
     var savedPlans = JSON.parse(localStorage.getItem("plans"));
     if (savedPlans !== null) {
@@ -117,6 +115,7 @@ function renderSavedPlans() {
     }
 }
 
+//Displaying the notification on the screen
 function renderNotification(str, hour) {
     var alert = $("<div class='alert fade show' role='alert'>");
     if (str === 'update') {
